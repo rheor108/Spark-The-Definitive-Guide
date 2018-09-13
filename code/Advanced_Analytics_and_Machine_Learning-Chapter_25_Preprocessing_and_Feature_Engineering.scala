@@ -1,9 +1,9 @@
 // in Scala
-val sales = spark.read.format("csv")
+val sales = (spark.read.format("csv")
   .option("header", "true")
   .option("inferSchema", "true")
   .load("/data/retail-data/by-day/*.csv")
-  .coalesce(5)
+  .coalesce(5))
   .where("Description IS NOT NULL")
 val fakeIntDF = spark.read.parquet("/data/simple-ml-integers")
 var simpleDF = spark.read.json("/data/simple-ml")
@@ -36,8 +36,8 @@ ss.fit(scaleDF).transform(scaleDF).show(false)
 
 // in Scala
 import org.apache.spark.ml.feature.RFormula
-val supervised = new RFormula()
-  .setFormula("lab ~ . + color:value1 + color:value2")
+val supervised = (new RFormula()
+  .setFormula("lab ~ . + color:value1 + color:value2"))
 supervised.fit(simpleDF).transform(simpleDF).show()
 
 
@@ -46,12 +46,12 @@ supervised.fit(simpleDF).transform(simpleDF).show()
 // in Scala
 import org.apache.spark.ml.feature.SQLTransformer
 
-val basicTransformation = new SQLTransformer()
+val basicTransformation = (new SQLTransformer()
   .setStatement("""
     SELECT sum(Quantity), count(*), CustomerID
     FROM __THIS__
     GROUP BY CustomerID
-  """)
+  """))
 
 basicTransformation.transform(sales).show()
 
@@ -146,9 +146,9 @@ idxRes.show()
 // COMMAND ----------
 
 // in Scala
-val valIndexer = new StringIndexer()
+val valIndexer = (new StringIndexer()
   .setInputCol("value1")
-  .setOutputCol("valueInd")
+  .setOutputCol("valueInd"))
 
 valIndexer.fit(simpleDF).transform(simpleDF).show()
 
@@ -172,7 +172,7 @@ labelReverse.transform(idxRes).show()
 // in Scala
 import org.apache.spark.ml.feature.VectorIndexer
 import org.apache.spark.ml.linalg.Vectors
-val idxIn = spark.createDataFrame(Seq(
+val idxIn = (spark.createDataFrame(Seq(
   (Vectors.dense(1, 2, 3),1),
   (Vectors.dense(2, 5, 6),2),
   (Vectors.dense(1, 8, 9),3)
@@ -180,7 +180,7 @@ val idxIn = spark.createDataFrame(Seq(
 val indxr = new VectorIndexer()
   .setInputCol("features")
   .setOutputCol("idxed")
-  .setMaxCategories(2)
+  .setMaxCategories(2))
 indxr.fit(idxIn).transform(idxIn).show
 
 
@@ -207,11 +207,11 @@ tokenized.show(false)
 
 // in Scala
 import org.apache.spark.ml.feature.RegexTokenizer
-val rt = new RegexTokenizer()
+val rt = (new RegexTokenizer()
   .setInputCol("Description")
   .setOutputCol("DescOut")
   .setPattern(" ") // simplest expression
-  .setToLowercase(true)
+  .setToLowercase(true))
 rt.transform(sales.select("Description")).show(false)
 
 
@@ -219,12 +219,12 @@ rt.transform(sales.select("Description")).show(false)
 
 // in Scala
 import org.apache.spark.ml.feature.RegexTokenizer
-val rt = new RegexTokenizer()
+val rt = (new RegexTokenizer()
   .setInputCol("Description")
   .setOutputCol("DescOut")
   .setPattern(" ")
   .setGaps(false)
-  .setToLowercase(true)
+  .setToLowercase(true))
 rt.transform(sales.select("Description")).show(false)
 
 
@@ -232,10 +232,10 @@ rt.transform(sales.select("Description")).show(false)
 
 // in Scala
 import org.apache.spark.ml.feature.StopWordsRemover
-val englishStopWords = StopWordsRemover.loadDefaultStopWords("english")
+val englishStopWords = (StopWordsRemover.loadDefaultStopWords("english")
 val stops = new StopWordsRemover()
   .setStopWords(englishStopWords)
-  .setInputCol("DescOut")
+  .setInputCol("DescOut"))
 stops.transform(tokenized).show()
 
 
@@ -253,12 +253,12 @@ bigram.transform(tokenized.select("DescOut")).show(false)
 
 // in Scala
 import org.apache.spark.ml.feature.CountVectorizer
-val cv = new CountVectorizer()
+val cv = (new CountVectorizer()
   .setInputCol("DescOut")
   .setOutputCol("countVec")
   .setVocabSize(500)
   .setMinTF(1)
-  .setMinDF(2)
+  .setMinDF(2))
 val fittedCV = cv.fit(tokenized)
 fittedCV.transform(tokenized).show(false)
 
@@ -266,10 +266,10 @@ fittedCV.transform(tokenized).show(false)
 // COMMAND ----------
 
 // in Scala
-val tfIdfIn = tokenized
+val tfIdfIn = (tokenized
   .where("array_contains(DescOut, 'red')")
   .select("DescOut")
-  .limit(10)
+  .limit(10))
 tfIdfIn.show(false)
 
 
@@ -277,14 +277,14 @@ tfIdfIn.show(false)
 
 // in Scala
 import org.apache.spark.ml.feature.{HashingTF, IDF}
-val tf = new HashingTF()
+val tf = (new HashingTF()
   .setInputCol("DescOut")
   .setOutputCol("TFOut")
-  .setNumFeatures(10000)
-val idf = new IDF()
+  .setNumFeatures(10000))
+val idf = (new IDF()
   .setInputCol("TFOut")
   .setOutputCol("IDFOut")
-  .setMinDocFreq(2)
+  .setMinDocFreq(2))
 
 
 // COMMAND ----------
@@ -306,11 +306,11 @@ val documentDF = spark.createDataFrame(Seq(
   "Logistic regression models are neat".split(" ")
 ).map(Tuple1.apply)).toDF("text")
 // Learn a mapping from words to Vectors.
-val word2Vec = new Word2Vec()
+val word2Vec = (new Word2Vec()
   .setInputCol("text")
   .setOutputCol("result")
   .setVectorSize(3)
-  .setMinCount(0)
+  .setMinCount(0))
 val model = word2Vec.fit(documentDF)
 val result = model.transform(documentDF)
 result.collect().foreach { case Row(text: Seq[_], features: Vector) =>
@@ -341,16 +341,16 @@ import org.apache.spark.ml.feature.{ChiSqSelector, Tokenizer}
 import org.apache.spark.sql.functions._
 
 val tkn = new Tokenizer().setInputCol("Description").setOutputCol("DescOut")
-val tokenized = tkn
+val tokenized = (tkn
   .transform(sales.select("Description", "CustomerId"))
-  .where("CustomerId IS NOT NULL")
+  .where("CustomerId IS NOT NULL"))
 val prechi = fittedCV.transform(tokenized)
-val chisq = new ChiSqSelector()
+val chisq = (new ChiSqSelector()
   .setFeaturesCol("countVec")
   .setLabelCol("CustomerId")
-  .setNumTopFeatures(2)
-chisq.fit(prechi).transform(prechi)
-  .drop("customerId", "Description", "DescOut").show()
+  .setNumTopFeatures(2))
+(chisq.fit(prechi).transform(prechi)
+  .drop("customerId", "Description", "DescOut").show())
 
 
 // COMMAND ----------

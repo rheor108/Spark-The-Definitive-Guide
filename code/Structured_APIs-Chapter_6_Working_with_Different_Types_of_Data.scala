@@ -406,8 +406,8 @@ df.select(split(col("Description"), " ")).show(2)
 // COMMAND ----------
 
 // in Scala
-df.select(split(col("Description"), " ").alias("array_col"))
-  .selectExpr("array_col[0]").show(2)
+(df.select(split(col("Description"), " ").alias("array_col"))
+  .selectExpr("array_col[0]").show(2))
 
 
 // COMMAND ----------
@@ -444,15 +444,15 @@ df.select(map(col("Description"), col("InvoiceNo")).alias("complex_map")).show(2
 // COMMAND ----------
 
 // in Scala
-df.select(map(col("Description"), col("InvoiceNo")).alias("complex_map"))
-  .selectExpr("complex_map['WHITE METAL LANTERN']").show(2)
+(df.select(map(col("Description"), col("InvoiceNo")).alias("complex_map"))
+  .selectExpr("complex_map['WHITE METAL LANTERN']").show(2))
 
 
 // COMMAND ----------
 
 // in Scala
-df.select(map(col("Description"), col("InvoiceNo")).alias("complex_map"))
-  .selectExpr("explode(complex_map)").show(2)
+(df.select(map(col("Description"), col("InvoiceNo")).alias("complex_map"))
+  .selectExpr("explode(complex_map)").show(2))
 
 
 // COMMAND ----------
