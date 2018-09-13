@@ -54,7 +54,7 @@ deviceModelStats = streaming.cube("gt", "model").avg()\
 
 
 # COMMAND ----------
-
+'''
 historicalAgg = static.groupBy("gt", "model").avg()
 deviceModelStats = streaming.drop("Arrival_Time", "Creation_Time", "Index")\
   .cube("gt", "model").avg()\
@@ -62,11 +62,12 @@ deviceModelStats = streaming.drop("Arrival_Time", "Creation_Time", "Index")\
   .writeStream.queryName("device_counts").format("memory")\
   .outputMode("complete")\
   .start()
-
+'''
 
 # COMMAND ----------
 
 # Subscribe to 1 topic
+'''
 df1 = spark.readStream.format("kafka")\
   .option("kafka.bootstrap.servers", "host1:port1,host2:port2")\
   .option("subscribe", "topic1")\
@@ -81,10 +82,10 @@ df3 = spark.readStream.format("kafka")\
   .option("kafka.bootstrap.servers", "host1:port1,host2:port2")\
   .option("subscribePattern", "topic.*")\
   .load()
-
+'''
 
 # COMMAND ----------
-
+'''
 df1.selectExpr("topic", "CAST(key AS STRING)", "CAST(value AS STRING)")\
   .writeStream\
   .format("kafka")\
@@ -98,7 +99,7 @@ df1.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")\
   .option("checkpointLocation", "/to/HDFS-compatible/dir")\
   .option("topic", "topic1")\
   .start()
-
+'''
 
 # COMMAND ----------
 
