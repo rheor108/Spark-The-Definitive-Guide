@@ -1,6 +1,6 @@
 // in Scala
-val df = spark.read.format("json")
-  .load("/data/flight-data/json/2015-summary.json")
+val df = (spark.read.format("json")
+  .load("/data/flight-data/json/2015-summary.json"))
 
 
 // COMMAND ----------
@@ -27,8 +27,8 @@ val myManualSchema = StructType(Array(
     Metadata.fromJson("{\"hello\":\"world\"}"))
 ))
 
-val df = spark.read.format("json").schema(myManualSchema)
-  .load("/data/flight-data/json/2015-summary.json")
+val df = (spark.read.format("json").schema(myManualSchema)
+  .load("/data/flight-data/json/2015-summary.json"))
 
 
 // COMMAND ----------
@@ -65,8 +65,8 @@ expr("(((someCol + 5) * 200) - 6) < otherCol")
 
 // COMMAND ----------
 
-spark.read.format("json").load("/data/flight-data/json/2015-summary.json")
-  .columns
+(spark.read.format("json").load("/data/flight-data/json/2015-summary.json")
+  .columns)
 
 
 // COMMAND ----------
@@ -93,8 +93,8 @@ myRow.getInt(2) // Int
 // COMMAND ----------
 
 // in Scala
-val df = spark.read.format("json")
-  .load("/data/flight-data/json/2015-summary.json")
+val df = (spark.read.format("json")
+  .load("/data/flight-data/json/2015-summary.json"))
 df.createOrReplaceTempView("dfTable")
 
 
@@ -136,14 +136,14 @@ df.select("DEST_COUNTRY_NAME", "ORIGIN_COUNTRY_NAME").show(2)
 
 // in Scala
 import org.apache.spark.sql.functions.{expr, col, column}
-df.select(
+(df.select(
     df.col("DEST_COUNTRY_NAME"),
     col("DEST_COUNTRY_NAME"),
     column("DEST_COUNTRY_NAME"),
     'DEST_COUNTRY_NAME,
     $"DEST_COUNTRY_NAME",
     expr("DEST_COUNTRY_NAME"))
-  .show(2)
+  .show(2))
 
 
 // COMMAND ----------
@@ -155,8 +155,8 @@ df.select(expr("DEST_COUNTRY_NAME AS destination")).show(2)
 // COMMAND ----------
 
 // in Scala
-df.select(expr("DEST_COUNTRY_NAME as destination").alias("DEST_COUNTRY_NAME"))
-  .show(2)
+(df.select(expr("DEST_COUNTRY_NAME as destination").alias("DEST_COUNTRY_NAME"))
+  .show(2))
 
 
 // COMMAND ----------
@@ -168,10 +168,10 @@ df.selectExpr("DEST_COUNTRY_NAME as newColumnName", "DEST_COUNTRY_NAME").show(2)
 // COMMAND ----------
 
 // in Scala
-df.selectExpr(
+(df.selectExpr(
     "*", // include all original columns
     "(DEST_COUNTRY_NAME = ORIGIN_COUNTRY_NAME) as withinCountry")
-  .show(2)
+  .show(2))
 
 
 // COMMAND ----------
@@ -196,8 +196,8 @@ df.withColumn("numberOne", lit(1)).show(2)
 // COMMAND ----------
 
 // in Scala
-df.withColumn("withinCountry", expr("ORIGIN_COUNTRY_NAME == DEST_COUNTRY_NAME"))
-  .show(2)
+(df.withColumn("withinCountry", expr("ORIGIN_COUNTRY_NAME == DEST_COUNTRY_NAME"))
+  .show(2))
 
 
 // COMMAND ----------
@@ -224,10 +224,10 @@ val dfWithLongColName = df.withColumn(
 // COMMAND ----------
 
 // in Scala
-dfWithLongColName.selectExpr(
+(dfWithLongColName.selectExpr(
     "`This Long Column-Name`",
     "`This Long Column-Name` as `new col`")
-  .show(2)
+  .show(2))
 
 
 // COMMAND ----------
@@ -265,8 +265,8 @@ df.where("count < 2").show(2)
 // COMMAND ----------
 
 // in Scala
-df.where(col("count") < 2).where(col("ORIGIN_COUNTRY_NAME") =!= "Croatia")
-  .show(2)
+(df.where(col("count") < 2).where(col("ORIGIN_COUNTRY_NAME") =!= "Croatia")
+  .show(2))
 
 
 // COMMAND ----------
@@ -306,11 +306,11 @@ val newRows = Seq(
   Row("New Country 2", "Other Country 3", 1L)
 )
 val parallelizedRows = spark.sparkContext.parallelize(newRows)
-val newDF = spark.createDataFrame(parallelizedRows, schema)
+val newDF = (spark.createDataFrame(parallelizedRows, schema)
 df.union(newDF)
   .where("count = 1")
   .where($"ORIGIN_COUNTRY_NAME" =!= "United States")
-  .show() // get all of them and we'll see our new rows at the end
+  .show()) // get all of them and we'll see our new rows at the end
 
 
 // COMMAND ----------
@@ -332,8 +332,8 @@ df.orderBy(desc("count"), asc("DEST_COUNTRY_NAME")).show(2)
 // COMMAND ----------
 
 // in Scala
-spark.read.format("json").load("/data/flight-data/json/*-summary.json")
-  .sortWithinPartitions("count")
+(spark.read.format("json").load("/data/flight-data/json/*-summary.json")
+  .sortWithinPartitions("count"))
 
 
 // COMMAND ----------

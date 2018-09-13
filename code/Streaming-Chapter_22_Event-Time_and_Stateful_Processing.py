@@ -9,7 +9,7 @@ streaming = spark\
 
 # COMMAND ----------
 
-withEventTime = streaming\.selectExpr(
+withEventTime = streaming.selectExpr(
   "*",
   "cast(cast(Creation_Time as double)/1000000000 as timestamp) as event_time")
 
@@ -23,10 +23,7 @@ withEventTime.groupBy(window(col("event_time"), "10 minutes")).count()\
   .format("memory")\
   .outputMode("complete")\
   .start()
-
-
-# COMMAND ----------
-
+'''
 from pyspark.sql.functions import window, col
 withEventTime.groupBy(window(col("event_time"), "10 minutes"), "User").count()\
   .writeStream\
@@ -34,9 +31,6 @@ withEventTime.groupBy(window(col("event_time"), "10 minutes"), "User").count()\
   .format("memory")\
   .outputMode("complete")\
   .start()
-
-
-# COMMAND ----------
 
 from pyspark.sql.functions import window, col
 withEventTime.groupBy(window(col("event_time"), "10 minutes", "5 minutes"))\
@@ -46,9 +40,6 @@ withEventTime.groupBy(window(col("event_time"), "10 minutes", "5 minutes"))\
   .format("memory")\
   .outputMode("complete")\
   .start()
-
-
-# COMMAND ----------
 
 from pyspark.sql.functions import window, col
 withEventTime\
@@ -60,7 +51,7 @@ withEventTime\
   .format("memory")\
   .outputMode("complete")\
   .start()
-
+'''
 
 # COMMAND ----------
 

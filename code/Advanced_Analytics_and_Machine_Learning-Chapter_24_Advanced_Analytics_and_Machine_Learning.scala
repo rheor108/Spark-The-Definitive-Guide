@@ -26,8 +26,8 @@ spark.read.format("libsvm").load(
 
 // in Scala
 import org.apache.spark.ml.feature.RFormula
-val supervised = new RFormula()
-  .setFormula("lab ~ . + color:value1 + color:value2")
+val supervised = (new RFormula()
+  .setFormula("lab ~ . + color:value1 + color:value2"))
 
 
 // COMMAND ----------
@@ -93,34 +93,34 @@ val pipeline = new Pipeline().setStages(stages)
 
 // in Scala
 import org.apache.spark.ml.tuning.ParamGridBuilder
-val params = new ParamGridBuilder()
+val params = (new ParamGridBuilder()
   .addGrid(rForm.formula, Array(
     "lab ~ . + color:value1",
     "lab ~ . + color:value1 + color:value2"))
   .addGrid(lr.elasticNetParam, Array(0.0, 0.5, 1.0))
   .addGrid(lr.regParam, Array(0.1, 2.0))
-  .build()
+  .build())
 
 
 // COMMAND ----------
 
 // in Scala
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
-val evaluator = new BinaryClassificationEvaluator()
+val evaluator = (new BinaryClassificationEvaluator()
   .setMetricName("areaUnderROC")
   .setRawPredictionCol("prediction")
-  .setLabelCol("label")
+  .setLabelCol("label"))
 
 
 // COMMAND ----------
 
 // in Scala
 import org.apache.spark.ml.tuning.TrainValidationSplit
-val tvs = new TrainValidationSplit()
+val tvs = (new TrainValidationSplit()
   .setTrainRatio(0.75) // also the default.
   .setEstimatorParamMaps(params)
   .setEstimator(pipeline)
-  .setEvaluator(evaluator)
+  .setEvaluator(evaluator))
 
 
 // COMMAND ----------

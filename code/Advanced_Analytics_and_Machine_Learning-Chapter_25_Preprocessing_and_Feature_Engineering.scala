@@ -338,6 +338,8 @@ pe.transform(scaleDF).show(false)
 
 // in Scala
 import org.apache.spark.ml.feature.{ChiSqSelector, Tokenizer}
+import org.apache.spark.sql.functions._
+
 val tkn = new Tokenizer().setInputCol("Description").setOutputCol("DescOut")
 val tokenized = tkn
   .transform(sales.select("Description", "CustomerId"))

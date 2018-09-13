@@ -6,8 +6,8 @@ val df = spark.read.load("/data/regression")
 
 // in Scala
 import org.apache.spark.ml.regression.LinearRegression
-val lr = new LinearRegression().setMaxIter(10).setRegParam(0.3)\
-  .setElasticNetParam(0.8)
+val lr = (new LinearRegression().setMaxIter(10).setRegParam(0.3)\
+  .setElasticNetParam(0.8))
 println(lr.explainParams())
 val lrModel = lr.fit(df)
 
@@ -26,12 +26,12 @@ println(summary.r2)
 
 // in Scala
 import org.apache.spark.ml.regression.GeneralizedLinearRegression
-val glr = new GeneralizedLinearRegression()
+val glr = (new GeneralizedLinearRegression()
   .setFamily("gaussian")
   .setLink("identity")
   .setMaxIter(10)
   .setRegParam(0.3)
-  .setLinkPredictionCol("linkOut")
+  .setLinkPredictionCol("linkOut"))
 println(glr.explainParams())
 val glrModel = glr.fit(df)
 
@@ -65,21 +65,21 @@ import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.regression.GeneralizedLinearRegression
 import org.apache.spark.ml.Pipeline
 import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
-val glr = new GeneralizedLinearRegression()
+val glr = (new GeneralizedLinearRegression()
   .setFamily("gaussian")
-  .setLink("identity")
+  .setLink("identity"))
 val pipeline = new Pipeline().setStages(Array(glr))
-val params = new ParamGridBuilder().addGrid(glr.regParam, Array(0, 0.5, 1))
-  .build()
-val evaluator = new RegressionEvaluator()
+val params = (new ParamGridBuilder().addGrid(glr.regParam, Array(0, 0.5, 1))
+  .build())
+val evaluator = (new RegressionEvaluator()
   .setMetricName("rmse")
   .setPredictionCol("prediction")
-  .setLabelCol("label")
-val cv = new CrossValidator()
+  .setLabelCol("label"))
+val cv = (new CrossValidator()
   .setEstimator(pipeline)
   .setEvaluator(evaluator)
   .setEstimatorParamMaps(params)
-  .setNumFolds(2) // should always be 3 or more but this dataset is small
+  .setNumFolds(2)) // should always be 3 or more but this dataset is small
 val model = cv.fit(df)
 
 
@@ -87,9 +87,9 @@ val model = cv.fit(df)
 
 // in Scala
 import org.apache.spark.mllib.evaluation.RegressionMetrics
-val out = model.transform(df)
+val out = (model.transform(df)
   .select("prediction", "label")
-  .rdd.map(x => (x(0).asInstanceOf[Double], x(1).asInstanceOf[Double]))
+  .rdd.map(x => (x(0).asInstanceOf[Double], x(1).asInstanceOf[Double])))
 val metrics = new RegressionMetrics(out)
 println(s"MSE = ${metrics.meanSquaredError}")
 println(s"RMSE = ${metrics.rootMeanSquaredError}")

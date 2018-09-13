@@ -1,6 +1,6 @@
 // in Scala
-val myCollection = "Spark The Definitive Guide : Big Data Processing Made Simple"
-  .split(" ")
+val myCollection = ("Spark The Definitive Guide : Big Data Processing Made Simple"
+  .split(" "))
 val words = spark.sparkContext.parallelize(myCollection, 2)
 
 
@@ -43,20 +43,20 @@ keyword.lookup("s")
 // COMMAND ----------
 
 // in Scala
-val distinctChars = words.flatMap(word => word.toLowerCase.toSeq).distinct
-  .collect()
+val distinctChars = (words.flatMap(word => word.toLowerCase.toSeq).distinct
+  .collect())
 import scala.util.Random
-val sampleMap = distinctChars.map(c => (c, new Random().nextDouble())).toMap
+val sampleMap = (distinctChars.map(c => (c, new Random().nextDouble())).toMap
 words.map(word => (word.toLowerCase.toSeq(0), word))
   .sampleByKey(true, sampleMap, 6L)
-  .collect()
+  .collect())
 
 
 // COMMAND ----------
 
 // in Scala
-words.map(word => (word.toLowerCase.toSeq(0), word))
-  .sampleByKeyExact(true, sampleMap, 6L).collect()
+(words.map(word => (word.toLowerCase.toSeq(0), word))
+  .sampleByKeyExact(true, sampleMap, 6L).collect())
 
 
 // COMMAND ----------
@@ -116,13 +116,13 @@ val mergeValuesFunc = (vals:List[Int], valToAppend:Int) => valToAppend :: vals
 val mergeCombinerFunc = (vals1:List[Int], vals2:List[Int]) => vals1 ::: vals2
 // now we define these as function variables
 val outputPartitions = 6
-KVcharacters
+(KVcharacters
   .combineByKey(
     valToCombiner,
     mergeValuesFunc,
     mergeCombinerFunc,
     outputPartitions)
-  .collect()
+  .collect())
 
 
 // COMMAND ----------
@@ -172,8 +172,8 @@ words.repartition(10) // gives us 10 partitions
 // COMMAND ----------
 
 // in Scala
-val df = spark.read.option("header", "true").option("inferSchema", "true")
-  .csv("/data/retail-data/all/")
+val df = (spark.read.option("header", "true").option("inferSchema", "true")
+  .csv("/data/retail-data/all/"))
 val rdd = df.coalesce(10).rdd
 
 
@@ -211,9 +211,9 @@ class DomainPartitioner extends Partitioner {
  }
 }
 
-keyedRDD
+(keyedRDD
   .partitionBy(new DomainPartitioner).map(_._1).glom().map(_.toSet.toSeq.length)
-  .take(5)
+  .take(5))
 
 
 // COMMAND ----------

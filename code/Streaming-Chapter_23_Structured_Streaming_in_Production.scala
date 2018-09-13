@@ -1,19 +1,19 @@
 // in Scala
 val static = spark.read.json("/data/activity-data")
-val streaming = spark
+val streaming = (spark
   .readStream
   .schema(static.schema)
   .option("maxFilesPerTrigger", 10)
   .json("/data/activity-data")
   .groupBy("gt")
-  .count()
-val query = streaming
+  .count())
+val query = (streaming
   .writeStream
   .outputMode("complete")
   .option("checkpointLocation", "/some/location/")
   .queryName("test_stream")
   .format("memory")
-  .start()
+  .start())
 
 
 // COMMAND ----------

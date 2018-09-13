@@ -3,32 +3,32 @@ import spark.implicits._
 case class Flight(DEST_COUNTRY_NAME: String,
                   ORIGIN_COUNTRY_NAME: String,
                   count: BigInt)
-val flightsDF = spark.read
-  .parquet("/data/flight-data/parquet/2010-summary.parquet/")
+val flightsDF = (spark.read
+  .parquet("/data/flight-data/parquet/2010-summary.parquet/"))
 val flights = flightsDF.as[Flight]
 
 
 // COMMAND ----------
 
 // in Scala
-flights
+(flights
   .filter(flight_row => flight_row.ORIGIN_COUNTRY_NAME != "Canada")
   .map(flight_row => flight_row)
-  .take(5)
+  .take(5))
 
-flights
+(flights
   .take(5)
   .filter(flight_row => flight_row.ORIGIN_COUNTRY_NAME != "Canada")
-  .map(fr => Flight(fr.DEST_COUNTRY_NAME, fr.ORIGIN_COUNTRY_NAME, fr.count + 5))
+  .map(fr => Flight(fr.DEST_COUNTRY_NAME, fr.ORIGIN_COUNTRY_NAME, fr.count + 5)))
 
 
 // COMMAND ----------
 
 // in Scala
-val staticDataFrame = spark.read.format("csv")
+val staticDataFrame = (spark.read.format("csv")
   .option("header", "true")
   .option("inferSchema", "true")
-  .load("/data/retail-data/by-day/*.csv")
+  .load("/data/retail-data/by-day/*.csv"))
 
 staticDataFrame.createOrReplaceTempView("retail_data")
 val staticSchema = staticDataFrame.schema
@@ -38,7 +38,7 @@ val staticSchema = staticDataFrame.schema
 
 // in Scala
 import org.apache.spark.sql.functions.{window, column, desc, col}
-staticDataFrame
+(staticDataFrame
   .selectExpr(
     "CustomerId",
     "(UnitPrice * Quantity) as total_cost",
@@ -46,7 +46,7 @@ staticDataFrame
   .groupBy(
     col("CustomerId"), window(col("InvoiceDate"), "1 day"))
   .sum("total_cost")
-  .show(5)
+  .show(5))
 
 
 // COMMAND ----------
@@ -56,12 +56,12 @@ spark.conf.set("spark.sql.shuffle.partitions", "5")
 
 // COMMAND ----------
 
-val streamingDataFrame = spark.readStream
+val streamingDataFrame = (spark.readStream
     .schema(staticSchema)
     .option("maxFilesPerTrigger", 1)
     .format("csv")
     .option("header", "true")
-    .load("/data/retail-data/by-day/*.csv")
+    .load("/data/retail-data/by-day/*.csv"))
 
 
 // COMMAND ----------
@@ -72,35 +72,35 @@ streamingDataFrame.isStreaming // returns true
 // COMMAND ----------
 
 // in Scala
-val purchaseByCustomerPerHour = streamingDataFrame
+val purchaseByCustomerPerHour = (streamingDataFrame
   .selectExpr(
     "CustomerId",
     "(UnitPrice * Quantity) as total_cost",
     "InvoiceDate")
   .groupBy(
     $"CustomerId", window($"InvoiceDate", "1 day"))
-  .sum("total_cost")
+  .sum("total_cost"))
 
 
 // COMMAND ----------
 
 // in Scala
-purchaseByCustomerPerHour.writeStream
+(purchaseByCustomerPerHour.writeStream
     .format("memory") // memory = store in-memory table
     .queryName("customer_purchases") // the name of the in-memory table
     .outputMode("complete") // complete = all the counts should be in the table
-    .start()
+    .start())
 
 
 // COMMAND ----------
 
 // in Scala
-spark.sql("""
+(spark.sql("""
   SELECT *
   FROM customer_purchases
   ORDER BY `sum(total_cost)` DESC
   """)
-  .show(5)
+  .show(5))
 
 
 // COMMAND ----------
@@ -112,19 +112,19 @@ staticDataFrame.printSchema()
 
 // in Scala
 import org.apache.spark.sql.functions.date_format
-val preppedDataFrame = staticDataFrame
+val preppedDataFrame = (staticDataFrame
   .na.fill(0)
   .withColumn("day_of_week", date_format($"InvoiceDate", "EEEE"))
-  .coalesce(5)
+  .coalesce(5))
 
 
 // COMMAND ----------
 
 // in Scala
-val trainDataFrame = preppedDataFrame
-  .where("InvoiceDate < '2011-07-01'")
-val testDataFrame = preppedDataFrame
-  .where("InvoiceDate >= '2011-07-01'")
+val trainDataFrame = (preppedDataFrame
+  .where("InvoiceDate < '2011-07-01'"))
+val testDataFrame = (preppedDataFrame
+  .where("InvoiceDate >= '2011-07-01'"))
 
 
 // COMMAND ----------
@@ -137,18 +137,18 @@ testDataFrame.count()
 
 // in Scala
 import org.apache.spark.ml.feature.StringIndexer
-val indexer = new StringIndexer()
+val indexer = (new StringIndexer()
   .setInputCol("day_of_week")
-  .setOutputCol("day_of_week_index")
+  .setOutputCol("day_of_week_index"))
 
 
 // COMMAND ----------
 
 // in Scala
 import org.apache.spark.ml.feature.OneHotEncoder
-val encoder = new OneHotEncoder()
+val encoder = (new OneHotEncoder()
   .setInputCol("day_of_week_index")
-  .setOutputCol("day_of_week_encoded")
+  .setOutputCol("day_of_week_encoded"))
 
 
 // COMMAND ----------
@@ -156,9 +156,9 @@ val encoder = new OneHotEncoder()
 // in Scala
 import org.apache.spark.ml.feature.VectorAssembler
 
-val vectorAssembler = new VectorAssembler()
+val vectorAssembler = (new VectorAssembler()
   .setInputCols(Array("UnitPrice", "Quantity", "day_of_week_encoded"))
-  .setOutputCol("features")
+  .setOutputCol("features"))
 
 
 // COMMAND ----------
@@ -166,8 +166,8 @@ val vectorAssembler = new VectorAssembler()
 // in Scala
 import org.apache.spark.ml.Pipeline
 
-val transformationPipeline = new Pipeline()
-  .setStages(Array(indexer, encoder, vectorAssembler))
+val transformationPipeline = (new Pipeline()
+  .setStages(Array(indexer, encoder, vectorAssembler)))
 
 
 // COMMAND ----------
@@ -191,9 +191,9 @@ transformedTraining.cache()
 
 // in Scala
 import org.apache.spark.ml.clustering.KMeans
-val kmeans = new KMeans()
+val kmeans = (new KMeans()
   .setK(20)
-  .setSeed(1L)
+  .setSeed(1L))
 
 
 // COMMAND ----------

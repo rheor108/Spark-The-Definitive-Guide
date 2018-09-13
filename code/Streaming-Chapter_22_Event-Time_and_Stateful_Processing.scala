@@ -1,11 +1,11 @@
 // in Scala
 spark.conf.set("spark.sql.shuffle.partitions", 5)
 val static = spark.read.json("/data/activity-data")
-val streaming = spark
+val streaming = (spark
   .readStream
   .schema(static.schema)
   .option("maxFilesPerTrigger", 10)
-  .json("/data/activity-data")
+  .json("/data/activity-data"))
 
 
 // COMMAND ----------
@@ -25,12 +25,12 @@ val withEventTime = streaming.selectExpr(
 
 // in Scala
 import org.apache.spark.sql.functions.{window, col}
-withEventTime.groupBy(window(col("event_time"), "10 minutes")).count()
+(withEventTime.groupBy(window(col("event_time"), "10 minutes")).count()
   .writeStream
   .queryName("events_per_window")
   .format("memory")
   .outputMode("complete")
-  .start()
+  .start())
 
 
 // COMMAND ----------
@@ -41,33 +41,36 @@ spark.sql("SELECT * FROM events_per_window").printSchema()
 // COMMAND ----------
 
 // in Scala
+/*
 import org.apache.spark.sql.functions.{window, col}
-withEventTime.groupBy(window(col("event_time"), "10 minutes"), "User").count()
+(withEventTime.groupBy(window(col("event_time"), "10 minutes"), "User").count()
   .writeStream
   .queryName("events_per_window")
   .format("memory")
   .outputMode("complete")
-  .start()
-
+  .start())
+*/
 
 // COMMAND ----------
 
 // in Scala
+/*
 import org.apache.spark.sql.functions.{window, col}
-withEventTime.groupBy(window(col("event_time"), "10 minutes", "5 minutes"))
+(withEventTime.groupBy(window(col("event_time"), "10 minutes", "5 minutes"))
   .count()
   .writeStream
   .queryName("events_per_window")
   .format("memory")
   .outputMode("complete")
-  .start()
-
+  .start())
+*/
 
 // COMMAND ----------
 
 // in Scala
+/*
 import org.apache.spark.sql.functions.{window, col}
-withEventTime
+(withEventTime
   .withWatermark("event_time", "5 hours")
   .groupBy(window(col("event_time"), "10 minutes", "5 minutes"))
   .count()
@@ -75,15 +78,15 @@ withEventTime
   .queryName("events_per_window")
   .format("memory")
   .outputMode("complete")
-  .start()
-
+  .start())
+*/
 
 // COMMAND ----------
 
 // in Scala
 import org.apache.spark.sql.functions.expr
 
-withEventTime
+(withEventTime
   .withWatermark("event_time", "5 seconds")
   .dropDuplicates("User", "event_time")
   .groupBy("User")
@@ -92,7 +95,7 @@ withEventTime
   .queryName("deduplicated")
   .format("memory")
   .outputMode("complete")
-  .start()
+  .start())
 
 
 // COMMAND ----------
@@ -153,9 +156,9 @@ def updateAcrossEvents(user:String,
 
 
 // COMMAND ----------
-
+/*
 import org.apache.spark.sql.streaming.GroupStateTimeout
-withEventTime
+(withEventTime
   .selectExpr("User as user",
     "cast(Creation_Time/1000000000 as timestamp) as timestamp", "gt as activity")
   .as[InputRow]
@@ -165,8 +168,8 @@ withEventTime
   .queryName("events_per_window")
   .format("memory")
   .outputMode("update")
-  .start()
-
+  .start())
+*/
 
 // COMMAND ----------
 
@@ -220,7 +223,7 @@ def updateAcrossEvents(device:String, inputs: Iterator[InputRow],
 
 import org.apache.spark.sql.streaming.GroupStateTimeout
 
-withEventTime
+(withEventTime
   .selectExpr("Device as device",
     "cast(Creation_Time/1000000000 as timestamp) as timestamp", "x")
   .as[InputRow]
@@ -231,7 +234,7 @@ withEventTime
   .queryName("count_based_device")
   .format("memory")
   .outputMode("append")
-  .start()
+  .start())
 
 
 // COMMAND ----------
@@ -301,10 +304,10 @@ def updateAcrossEvents(uid:String,
 
 
 // COMMAND ----------
-
+/*
 import org.apache.spark.sql.streaming.GroupStateTimeout
 
-withEventTime.where("x is not null")
+(withEventTime.where("x is not null")
   .selectExpr("user as uid",
     "cast(Creation_Time/1000000000 as timestamp) as timestamp",
     "x", "gt as activity")
@@ -316,8 +319,8 @@ withEventTime.where("x is not null")
   .writeStream
   .queryName("count_based_device")
   .format("memory")
-  .start()
-
+  .start())
+*/
 
 // COMMAND ----------
 

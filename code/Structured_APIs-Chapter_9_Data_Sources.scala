@@ -5,11 +5,11 @@ dataFrame.write
 // COMMAND ----------
 
 // in Scala
-dataframe.write.format("csv")
+(dataframe.write.format("csv")
   .option("mode", "OVERWRITE")
   .option("dateFormat", "yyyy-MM-dd")
   .option("path", "path/to/file(s)")
-  .save()
+  .save())
 
 
 // COMMAND ----------
@@ -20,11 +20,11 @@ spark.read.format("csv")
 // COMMAND ----------
 
 // in Scala
-spark.read.format("csv")
+(spark.read.format("csv")
   .option("header", "true")
   .option("mode", "FAILFAST")
   .option("inferSchema", "true")
-  .load("some/path/to/file.csv")
+  .load("some/path/to/file.csv"))
 
 
 // COMMAND ----------
@@ -36,12 +36,12 @@ val myManualSchema = new StructType(Array(
   new StructField("ORIGIN_COUNTRY_NAME", StringType, true),
   new StructField("count", LongType, false)
 ))
-spark.read.format("csv")
+(spark.read.format("csv")
   .option("header", "true")
   .option("mode", "FAILFAST")
   .schema(myManualSchema)
   .load("/data/flight-data/csv/2010-summary.csv")
-  .show(5)
+  .show(5))
 
 
 // COMMAND ----------
@@ -52,27 +52,27 @@ val myManualSchema = new StructType(Array(
                      new StructField("ORIGIN_COUNTRY_NAME", LongType, true),
                      new StructField("count", LongType, false) ))
 
-spark.read.format("csv")
+(spark.read.format("csv")
   .option("header", "true")
   .option("mode", "FAILFAST")
   .schema(myManualSchema)
   .load("/data/flight-data/csv/2010-summary.csv")
-  .take(5)
+  .take(5))
 
 
 // COMMAND ----------
 
 // in Scala
-val csvFile = spark.read.format("csv")
+val csvFile = (spark.read.format("csv")
   .option("header", "true").option("mode", "FAILFAST").schema(myManualSchema)
-  .load("/data/flight-data/csv/2010-summary.csv")
+  .load("/data/flight-data/csv/2010-summary.csv"))
 
 
 // COMMAND ----------
 
 // in Scala
-csvFile.write.format("csv").mode("overwrite").option("sep", "\t")
-  .save("/tmp/my-tsv-file.tsv")
+(csvFile.write.format("csv").mode("overwrite").option("sep", "\t")
+  .save("/tmp/my-tsv-file.tsv"))
 
 
 // COMMAND ----------
@@ -83,8 +83,8 @@ spark.read.format("json")
 // COMMAND ----------
 
 // in Scala
-spark.read.format("json").option("mode", "FAILFAST").schema(myManualSchema)
-  .load("/data/flight-data/json/2010-summary.json").show(5)
+(spark.read.format("json").option("mode", "FAILFAST").schema(myManualSchema)
+  .load("/data/flight-data/json/2010-summary.json").show(5))
 
 
 // COMMAND ----------
@@ -106,15 +106,15 @@ spark.read.format("parquet")
 // COMMAND ----------
 
 // in Scala
-spark.read.format("parquet")
-  .load("/data/flight-data/parquet/2010-summary.parquet").show(5)
+(spark.read.format("parquet")
+  .load("/data/flight-data/parquet/2010-summary.parquet").show(5))
 
 
 // COMMAND ----------
 
 // in Scala
-csvFile.write.format("parquet").mode("overwrite")
-  .save("/tmp/my-parquet-file.parquet")
+(csvFile.write.format("parquet").mode("overwrite")
+  .save("/tmp/my-parquet-file.parquet"))
 
 
 // COMMAND ----------
@@ -149,19 +149,19 @@ connection.close()
 // COMMAND ----------
 
 // in Scala
-val dbDataFrame = spark.read.format("jdbc").option("url", url)
-  .option("dbtable", tablename).option("driver",  driver).load()
+val dbDataFrame = (spark.read.format("jdbc").option("url", url)
+  .option("dbtable", tablename).option("driver",  driver).load())
 
 
 // COMMAND ----------
 
 // in Scala
-val pgDF = spark.read
+val pgDF = (spark.read
   .format("jdbc")
   .option("driver", "org.postgresql.Driver")
   .option("url", "jdbc:postgresql://database_server")
   .option("dbtable", "schema.tablename")
-  .option("user", "username").option("password","my-secret-password").load()
+  .option("user", "username").option("password","my-secret-password").load())
 
 
 // COMMAND ----------
@@ -185,9 +185,9 @@ dbDataFrame.filter("DEST_COUNTRY_NAME in ('Anguilla', 'Sweden')").explain
 // in Scala
 val pushdownQuery = """(SELECT DISTINCT(DEST_COUNTRY_NAME) FROM flight_info)
   AS flight_info"""
-val dbDataFrame = spark.read.format("jdbc")
+val dbDataFrame = (spark.read.format("jdbc")
   .option("url", url).option("dbtable", pushdownQuery).option("driver",  driver)
-  .load()
+  .load())
 
 
 // COMMAND ----------
@@ -198,9 +198,9 @@ dbDataFrame.explain()
 // COMMAND ----------
 
 // in Scala
-val dbDataFrame = spark.read.format("jdbc")
+val dbDataFrame = (spark.read.format("jdbc")
   .option("url", url).option("dbtable", tablename).option("driver", driver)
-  .option("numPartitions", 10).load()
+  .option("numPartitions", 10).load())
 
 
 // COMMAND ----------
@@ -243,8 +243,8 @@ val numPartitions = 10
 // COMMAND ----------
 
 // in Scala
-spark.read.jdbc(url,tablename,colName,lowerBound,upperBound,numPartitions,props)
-  .count() // 255
+(spark.read.jdbc(url,tablename,colName,lowerBound,upperBound,numPartitions,props)
+  .count()) // 255
 
 
 // COMMAND ----------
@@ -274,8 +274,8 @@ spark.read.jdbc(newPath, tablename, props).count() // 765
 
 // COMMAND ----------
 
-spark.read.textFile("/data/flight-data/csv/2010-summary.csv")
-  .selectExpr("split(value, ',') as rows").show()
+(spark.read.textFile("/data/flight-data/csv/2010-summary.csv")
+  .selectExpr("split(value, ',') as rows").show())
 
 
 // COMMAND ----------
@@ -286,15 +286,15 @@ csvFile.select("DEST_COUNTRY_NAME").write.text("/tmp/simple-text-file.txt")
 // COMMAND ----------
 
 // in Scala
-csvFile.limit(10).select("DEST_COUNTRY_NAME", "count")
-  .write.partitionBy("count").text("/tmp/five-csv-files2.csv")
+(csvFile.limit(10).select("DEST_COUNTRY_NAME", "count")
+  .write.partitionBy("count").text("/tmp/five-csv-files2.csv"))
 
 
 // COMMAND ----------
 
 // in Scala
-csvFile.limit(10).write.mode("overwrite").partitionBy("DEST_COUNTRY_NAME")
-  .save("/tmp/partitioned-files.parquet")
+(csvFile.limit(10).write.mode("overwrite").partitionBy("DEST_COUNTRY_NAME")
+  .save("/tmp/partitioned-files.parquet"))
 
 
 // COMMAND ----------
@@ -302,8 +302,8 @@ csvFile.limit(10).write.mode("overwrite").partitionBy("DEST_COUNTRY_NAME")
 val numberBuckets = 10
 val columnToBucketBy = "count"
 
-csvFile.write.format("parquet").mode("overwrite")
-  .bucketBy(numberBuckets, columnToBucketBy).saveAsTable("bucketedFiles")
+(csvFile.write.format("parquet").mode("overwrite")
+  .bucketBy(numberBuckets, columnToBucketBy).saveAsTable("bucketedFiles"))
 
 
 // COMMAND ----------

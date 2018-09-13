@@ -21,11 +21,11 @@ divisBy2.count()
 // COMMAND ----------
 
 // in Scala
-val flightData2015 = spark
+val flightData2015 = (spark
   .read
   .option("inferSchema", "true")
   .option("header", "true")
-  .csv("/data/flight-data/csv/2015-summary.csv")
+  .csv("/data/flight-data/csv/2015-summary.csv"))
 
 
 // COMMAND ----------
@@ -62,9 +62,9 @@ FROM flight_data_2015
 GROUP BY DEST_COUNTRY_NAME
 """)
 
-val dataFrameWay = flightData2015
+val dataFrameWay = (flightData2015
   .groupBy('DEST_COUNTRY_NAME)
-  .count()
+  .count())
 
 sqlWay.explain
 dataFrameWay.explain
@@ -102,25 +102,25 @@ maxSql.show()
 // in Scala
 import org.apache.spark.sql.functions.desc
 
-flightData2015
+(flightData2015
   .groupBy("DEST_COUNTRY_NAME")
   .sum("count")
   .withColumnRenamed("sum(count)", "destination_total")
   .sort(desc("destination_total"))
   .limit(5)
-  .show()
+  .show())
 
 
 // COMMAND ----------
 
 // in Scala
-flightData2015
+(flightData2015
   .groupBy("DEST_COUNTRY_NAME")
   .sum("count")
   .withColumnRenamed("sum(count)", "destination_total")
   .sort(desc("destination_total"))
   .limit(5)
-  .explain()
+  .explain())
 
 
 // COMMAND ----------

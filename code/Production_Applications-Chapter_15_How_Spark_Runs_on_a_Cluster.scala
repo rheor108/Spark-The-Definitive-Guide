@@ -1,8 +1,8 @@
 // Creating a SparkSession in Scala
 import org.apache.spark.sql.SparkSession
-val spark = SparkSession.builder().appName("Databricks Spark Example")
+val spark = (SparkSession.builder().appName("Databricks Spark Example")
   .config("spark.sql.warehouse.dir", "/user/hive/warehouse")
-  .getOrCreate()
+  .getOrCreate())
 
 
 // COMMAND ----------

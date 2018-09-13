@@ -1,8 +1,8 @@
 // in Scala
-val df = spark.read.format("csv")
+val df = (spark.read.format("csv")
   .option("header", "true")
   .option("inferSchema", "true")
-  .load("/data/retail-data/by-day/2010-12-01.csv")
+  .load("/data/retail-data/by-day/2010-12-01.csv"))
 df.printSchema()
 df.createOrReplaceTempView("dfTable")
 
@@ -18,30 +18,30 @@ df.select(lit(5), lit("five"), lit(5.0))
 
 // in Scala
 import org.apache.spark.sql.functions.col
-df.where(col("InvoiceNo").equalTo(536365))
+(df.where(col("InvoiceNo").equalTo(536365))
   .select("InvoiceNo", "Description")
-  .show(5, false)
+  .show(5, false))
 
 
 // COMMAND ----------
 
 // in Scala
 import org.apache.spark.sql.functions.col
-df.where(col("InvoiceNo") === 536365)
+(df.where(col("InvoiceNo") === 536365)
   .select("InvoiceNo", "Description")
-  .show(5, false)
+  .show(5, false))
 
 
 // COMMAND ----------
 
-df.where("InvoiceNo = 536365")
-  .show(5, false)
+(df.where("InvoiceNo = 536365")
+  .show(5, false))
 
 
 // COMMAND ----------
 
-df.where("InvoiceNo <> 536365")
-  .show(5, false)
+(df.where("InvoiceNo <> 536365")
+  .show(5, false))
 
 
 // COMMAND ----------
@@ -49,8 +49,8 @@ df.where("InvoiceNo <> 536365")
 // in Scala
 val priceFilter = col("UnitPrice") > 600
 val descripFilter = col("Description").contains("POSTAGE")
-df.where(col("StockCode").isin("DOT")).where(priceFilter.or(descripFilter))
-  .show()
+(df.where(col("StockCode").isin("DOT")).where(priceFilter.or(descripFilter))
+  .show())
 
 
 // COMMAND ----------
@@ -59,21 +59,21 @@ df.where(col("StockCode").isin("DOT")).where(priceFilter.or(descripFilter))
 val DOTCodeFilter = col("StockCode") === "DOT"
 val priceFilter = col("UnitPrice") > 600
 val descripFilter = col("Description").contains("POSTAGE")
-df.withColumn("isExpensive", DOTCodeFilter.and(priceFilter.or(descripFilter)))
+(df.withColumn("isExpensive", DOTCodeFilter.and(priceFilter.or(descripFilter)))
   .where("isExpensive")
-  .select("unitPrice", "isExpensive").show(5)
+  .select("unitPrice", "isExpensive").show(5))
 
 
 // COMMAND ----------
 
 // in Scala
 import org.apache.spark.sql.functions.{expr, not, col}
-df.withColumn("isExpensive", not(col("UnitPrice").leq(250)))
+(df.withColumn("isExpensive", not(col("UnitPrice").leq(250)))
   .filter("isExpensive")
-  .select("Description", "UnitPrice").show(5)
-df.withColumn("isExpensive", expr("NOT UnitPrice <= 250"))
+  .select("Description", "UnitPrice").show(5))
+(df.withColumn("isExpensive", expr("NOT UnitPrice <= 250"))
   .filter("isExpensive")
-  .select("Description", "UnitPrice").show(5)
+  .select("Description", "UnitPrice").show(5))
 
 
 // COMMAND ----------
@@ -203,8 +203,8 @@ df.select(
 
 // in Scala
 import org.apache.spark.sql.functions.translate
-df.select(translate(col("Description"), "LEET", "1337"), col("Description"))
-  .show(2)
+(df.select(translate(col("Description"), "LEET", "1337"), col("Description"))
+  .show(2))
 
 
 // COMMAND ----------
@@ -223,9 +223,9 @@ df.select(
 // in Scala
 val containsBlack = col("Description").contains("BLACK")
 val containsWhite = col("DESCRIPTION").contains("WHITE")
-df.withColumn("hasSimpleColor", containsBlack.or(containsWhite))
+(df.withColumn("hasSimpleColor", containsBlack.or(containsWhite))
   .where("hasSimpleColor")
-  .select("Description").show(3, false)
+  .select("Description").show(3, false))
 
 
 // COMMAND ----------
@@ -235,8 +235,8 @@ val simpleColors = Seq("black", "white", "red", "green", "blue")
 val selectedColumns = simpleColors.map(color => {
    col("Description").contains(color.toUpperCase).alias(s"is_$color")
 }):+expr("*") // could also append this value
-df.select(selectedColumns:_*).where(col("is_white").or(col("is_red")))
-  .select("Description").show(3, false)
+(df.select(selectedColumns:_*).where(col("is_white").or(col("is_red")))
+  .select("Description").show(3, false))
 
 
 // COMMAND ----------
@@ -248,9 +248,9 @@ df.printSchema()
 
 // in Scala
 import org.apache.spark.sql.functions.{current_date, current_timestamp}
-val dateDF = spark.range(10)
+val dateDF = (spark.range(10)
   .withColumn("today", current_date())
-  .withColumn("now", current_timestamp())
+  .withColumn("now", current_timestamp()))
 dateDF.createOrReplaceTempView("dateTable")
 
 
@@ -270,20 +270,20 @@ dateDF.select(date_sub(col("today"), 5), date_add(col("today"), 5)).show(1)
 
 // in Scala
 import org.apache.spark.sql.functions.{datediff, months_between, to_date}
-dateDF.withColumn("week_ago", date_sub(col("today"), 7))
-  .select(datediff(col("week_ago"), col("today"))).show(1)
-dateDF.select(
+(dateDF.withColumn("week_ago", date_sub(col("today"), 7))
+  .select(datediff(col("week_ago"), col("today"))).show(1))
+(dateDF.select(
     to_date(lit("2016-01-01")).alias("start"),
     to_date(lit("2017-05-22")).alias("end"))
-  .select(months_between(col("start"), col("end"))).show(1)
+  .select(months_between(col("start"), col("end"))).show(1))
 
 
 // COMMAND ----------
 
 // in Scala
 import org.apache.spark.sql.functions.{to_date, lit}
-spark.range(5).withColumn("date", lit("2017-01-01"))
-  .select(to_date(col("date"))).show(1)
+(spark.range(5).withColumn("date", lit("2017-01-01"))
+  .select(to_date(col("date"))).show(1))
 
 
 // COMMAND ----------
@@ -429,9 +429,9 @@ df.select(array_contains(split(col("Description"), " "), "WHITE")).show(2)
 // in Scala
 import org.apache.spark.sql.functions.{split, explode}
 
-df.withColumn("splitted", split(col("Description"), " "))
+(df.withColumn("splitted", split(col("Description"), " "))
   .withColumn("exploded", explode(col("splitted")))
-  .select("Description", "InvoiceNo", "exploded").show(2)
+  .select("Description", "InvoiceNo", "exploded").show(2))
 
 
 // COMMAND ----------
@@ -481,8 +481,8 @@ jsonDF.selectExpr(
 
 // in Scala
 import org.apache.spark.sql.functions.to_json
-df.selectExpr("(InvoiceNo, Description) as myStruct")
-  .select(to_json(col("myStruct")))
+(df.selectExpr("(InvoiceNo, Description) as myStruct")
+  .select(to_json(col("myStruct"))))
 
 
 // COMMAND ----------
@@ -493,9 +493,9 @@ import org.apache.spark.sql.types._
 val parseSchema = new StructType(Array(
   new StructField("InvoiceNo",StringType,true),
   new StructField("Description",StringType,true)))
-df.selectExpr("(InvoiceNo, Description) as myStruct")
+(df.selectExpr("(InvoiceNo, Description) as myStruct")
   .select(to_json(col("myStruct")).alias("newJSON"))
-  .select(from_json(col("newJSON"), parseSchema), col("newJSON")).show(2)
+  .select(from_json(col("newJSON"), parseSchema), col("newJSON")).show(2))
 
 
 // COMMAND ----------

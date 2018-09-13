@@ -4,8 +4,8 @@ case class Flight(DEST_COUNTRY_NAME: String,
 
 // COMMAND ----------
 
-val flightsDF = spark.read
-  .parquet("/data/flight-data/parquet/2010-summary.parquet/")
+val flightsDF = (spark.read
+  .parquet("/data/flight-data/parquet/2010-summary.parquet/"))
 val flights = flightsDF.as[Flight]
 
 
@@ -50,15 +50,15 @@ val localDestinations = destinations.take(5)
 
 case class FlightMetadata(count: BigInt, randomData: BigInt)
 
-val flightsMeta = spark.range(500).map(x => (x, scala.util.Random.nextLong))
+val flightsMeta = (spark.range(500).map(x => (x, scala.util.Random.nextLong))
   .withColumnRenamed("_1", "count").withColumnRenamed("_2", "randomData")
-  .as[FlightMetadata]
+  .as[FlightMetadata])
 
 
 // COMMAND ----------
 
-val flights2 = flights
-  .joinWith(flightsMeta, flights.col("count") === flightsMeta.col("count"))
+val flights2 = (flights
+  .joinWith(flightsMeta, flights.col("count") === flightsMeta.col("count")))
 
 
 // COMMAND ----------

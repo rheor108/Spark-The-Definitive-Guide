@@ -1,17 +1,17 @@
 // in Scala
-val bikeStations = spark.read.option("header","true")
-  .csv("/data/bike-data/201508_station_data.csv")
-val tripData = spark.read.option("header","true")
-  .csv("/data/bike-data/201508_trip_data.csv")
+val bikeStations = (spark.read.option("header","true")
+  .csv("/data/bike-data/201508_station_data.csv"))
+val tripData = (spark.read.option("header","true")
+  .csv("/data/bike-data/201508_trip_data.csv"))
 
 
 // COMMAND ----------
 
 // in Scala
 val stationVertices = bikeStations.withColumnRenamed("name", "id").distinct()
-val tripEdges = tripData
+val tripEdges = (tripData
   .withColumnRenamed("Start Station", "src")
-  .withColumnRenamed("End Station", "dst")
+  .withColumnRenamed("End Station", "dst"))
 
 
 // COMMAND ----------
@@ -40,18 +40,18 @@ stationGraph.edges.groupBy("src", "dst").count().orderBy(desc("count")).show(10)
 // COMMAND ----------
 
 // in Scala
-stationGraph.edges
+(stationGraph.edges
   .where("src = 'Townsend at 7th' OR dst = 'Townsend at 7th'")
   .groupBy("src", "dst").count()
   .orderBy(desc("count"))
-  .show(10)
+  .show(10))
 
 
 // COMMAND ----------
 
 // in Scala
-val townAnd7thEdges = stationGraph.edges
-  .where("src = 'Townsend at 7th' OR dst = 'Townsend at 7th'")
+val townAnd7thEdges = (stationGraph.edges
+  .where("src = 'Townsend at 7th' OR dst = 'Townsend at 7th'"))
 val subgraph = GraphFrame(stationGraph.vertices, townAnd7thEdges)
 
 
@@ -65,7 +65,7 @@ val motifs = stationGraph.find("(a)-[ab]->(b); (b)-[bc]->(c); (c)-[ca]->(a)")
 
 // in Scala
 import org.apache.spark.sql.functions.expr
-motifs.selectExpr("*",
+(motifs.selectExpr("*",
     "to_timestamp(ab.`Start Date`, 'MM/dd/yyyy HH:mm') as abStart",
     "to_timestamp(bc.`Start Date`, 'MM/dd/yyyy HH:mm') as bcStart",
     "to_timestamp(ca.`Start Date`, 'MM/dd/yyyy HH:mm') as caStart")
@@ -74,7 +74,7 @@ motifs.selectExpr("*",
   .where("abStart < bcStart").where("bcStart < caStart")
   .orderBy(expr("cast(caStart as long) - cast(abStart as long)"))
   .selectExpr("a.id", "b.id", "c.id", "ab.`Start Date`", "ca.`End Date`")
-  .limit(1).show(false)
+  .limit(1).show(false))
 
 
 // COMMAND ----------
@@ -102,8 +102,8 @@ outDeg.orderBy(desc("outDegree")).show(5, false)
 // COMMAND ----------
 
 // in Scala
-val degreeRatio = inDeg.join(outDeg, Seq("id"))
-  .selectExpr("id", "double(inDegree)/double(outDegree) as degreeRatio")
+val degreeRatio = (inDeg.join(outDeg, Seq("id"))
+  .selectExpr("id", "double(inDegree)/double(outDegree) as degreeRatio"))
 degreeRatio.orderBy(desc("degreeRatio")).show(10, false)
 degreeRatio.orderBy("degreeRatio").show(10, false)
 
@@ -111,8 +111,8 @@ degreeRatio.orderBy("degreeRatio").show(10, false)
 // COMMAND ----------
 
 // in Scala
-stationGraph.bfs.fromExpr("id = 'Townsend at 7th'")
-  .toExpr("id = 'Spear at Folsom'").maxPathLength(2).run().show(10)
+(stationGraph.bfs.fromExpr("id = 'Townsend at 7th'")
+  .toExpr("id = 'Spear at Folsom'").maxPathLength(2).run().show(10))
 
 
 // COMMAND ----------

@@ -1,9 +1,9 @@
 // in Scala
-val df = spark.read.format("csv")
+val df = (spark.read.format("csv")
   .option("header", "true")
   .option("inferSchema", "true")
   .load("/data/retail-data/all/*.csv")
-  .coalesce(5)
+  .coalesce(5))
 df.cache()
 df.createOrReplaceTempView("dfTable")
 
@@ -67,7 +67,7 @@ df.select(sumDistinct("Quantity")).show() // 29310
 // in Scala
 import org.apache.spark.sql.functions.{sum, count, avg, expr}
 
-df.select(
+(df.select(
     count("Quantity").alias("total_transactions"),
     sum("Quantity").alias("total_purchases"),
     avg("Quantity").alias("avg_purchases"),
@@ -75,7 +75,7 @@ df.select(
   .selectExpr(
     "total_purchases/total_transactions",
     "avg_purchases",
-    "mean_purchases").show()
+    "mean_purchases").show())
 
 
 // COMMAND ----------
@@ -143,10 +143,10 @@ dfWithDate.createOrReplaceTempView("dfWithDate")
 // in Scala
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.col
-val windowSpec = Window
+(val windowSpec = Window
   .partitionBy("CustomerId", "date")
   .orderBy(col("Quantity").desc)
-  .rowsBetween(Window.unboundedPreceding, Window.currentRow)
+  .rowsBetween(Window.unboundedPreceding, Window.currentRow))
 
 
 // COMMAND ----------
@@ -168,14 +168,14 @@ val purchaseRank = rank().over(windowSpec)
 // in Scala
 import org.apache.spark.sql.functions.col
 
-dfWithDate.where("CustomerId IS NOT NULL").orderBy("CustomerId")
+(dfWithDate.where("CustomerId IS NOT NULL").orderBy("CustomerId")
   .select(
     col("CustomerId"),
     col("date"),
     col("Quantity"),
     purchaseRank.alias("quantityRank"),
     purchaseDenseRank.alias("quantityDenseRank"),
-    maxPurchaseQuantity.alias("maxPurchaseQuantity")).show()
+    maxPurchaseQuantity.alias("maxPurchaseQuantity")).show())
 
 
 // COMMAND ----------
@@ -187,9 +187,9 @@ dfNoNull.createOrReplaceTempView("dfNoNull")
 
 // COMMAND ----------
 
-val rolledUpDF = dfNoNull.rollup("Date", "Country").agg(sum("Quantity"))
+val rolledUpDF = (dfNoNull.rollup("Date", "Country").agg(sum("Quantity"))
   .selectExpr("Date", "Country", "`sum(Quantity)` as total_quantity")
-  .orderBy("Date")
+  .orderBy("Date"))
 rolledUpDF.show()
 
 
@@ -206,8 +206,8 @@ rolledUpDF.where("Date IS NULL").show()
 // COMMAND ----------
 
 // in Scala
-dfNoNull.cube("Date", "Country").agg(sum(col("Quantity")))
-  .select("Date", "Country", "sum(Quantity)").orderBy("Date").show()
+(dfNoNull.cube("Date", "Country").agg(sum(col("Quantity")))
+  .select("Date", "Country", "sum(Quantity)").orderBy("Date").show())
 
 
 // COMMAND ----------
@@ -215,9 +215,9 @@ dfNoNull.cube("Date", "Country").agg(sum(col("Quantity")))
 // in Scala
 import org.apache.spark.sql.functions.{grouping_id, sum, expr}
 
-dfNoNull.cube("customerId", "stockCode").agg(grouping_id(), sum("Quantity"))
+(dfNoNull.cube("customerId", "stockCode").agg(grouping_id(), sum("Quantity"))
 .orderBy(expr("grouping_id()").desc)
-.show()
+.show())
 
 
 // COMMAND ----------
@@ -267,11 +267,11 @@ class BoolAnd extends UserDefinedAggregateFunction {
 val ba = new BoolAnd
 spark.udf.register("booland", ba)
 import org.apache.spark.sql.functions._
-spark.range(1)
+(spark.range(1)
   .selectExpr("explode(array(TRUE, TRUE, TRUE)) as t")
   .selectExpr("explode(array(TRUE, FALSE, TRUE)) as f", "t")
   .select(ba(col("t")), expr("booland(f)"))
-  .show()
+  .show())
 
 
 // COMMAND ----------

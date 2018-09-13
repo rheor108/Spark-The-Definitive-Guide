@@ -1,6 +1,6 @@
 // in Scala
-val bInput = spark.read.format("parquet").load("/data/binary-classification")
-  .selectExpr("features", "cast(label as double) as label")
+val bInput = (spark.read.format("parquet").load("/data/binary-classification")
+  .selectExpr("features", "cast(label as double) as label"))
 
 
 // COMMAND ----------
@@ -70,9 +70,9 @@ val trainedModel = nb.fit(bInput.where("label != 0"))
 
 // in Scala
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
-val out = model.transform(bInput)
+val out = (model.transform(bInput)
   .select("prediction", "label")
-  .rdd.map(x => (x(0).asInstanceOf[Double], x(1).asInstanceOf[Double]))
+  .rdd.map(x => (x(0).asInstanceOf[Double], x(1).asInstanceOf[Double])))
 val metrics = new BinaryClassificationMetrics(out)
 
 

@@ -22,8 +22,8 @@ spark.range(10).rdd.toDF()
 // COMMAND ----------
 
 // in Scala
-val myCollection = "Spark The Definitive Guide : Big Data Processing Made Simple"
-  .split(" ")
+val myCollection = ("Spark The Definitive Guide : Big Data Processing Made Simple"
+  .split(" "))
 val words = spark.sparkContext.parallelize(myCollection, 2)
 
 

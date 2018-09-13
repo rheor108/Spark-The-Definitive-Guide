@@ -1,6 +1,6 @@
 // in Scala
-val myCollection = "Spark The Definitive Guide : Big Data Processing Made Simple"
-  .split(" ")
+val myCollection = ("Spark The Definitive Guide : Big Data Processing Made Simple"
+  .split(" "))
 val words = spark.sparkContext.parallelize(myCollection, 2)
 
 
@@ -26,9 +26,9 @@ suppBroadcast.value
 // COMMAND ----------
 
 // in Scala
-words.map(word => (word, suppBroadcast.value.getOrElse(word, 0)))
+(words.map(word => (word, suppBroadcast.value.getOrElse(word, 0)))
   .sortBy(wordPair => wordPair._2)
-  .collect()
+  .collect())
 
 
 // COMMAND ----------
@@ -36,9 +36,9 @@ words.map(word => (word, suppBroadcast.value.getOrElse(word, 0)))
 // in Scala
 case class Flight(DEST_COUNTRY_NAME: String,
                   ORIGIN_COUNTRY_NAME: String, count: BigInt)
-val flights = spark.read
+val flights = (spark.read
   .parquet("/data/flight-data/parquet/2010-summary.parquet")
-  .as[Flight]
+  .as[Flight])
 
 
 // COMMAND ----------

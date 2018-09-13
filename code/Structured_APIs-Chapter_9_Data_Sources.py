@@ -58,15 +58,13 @@ tablename = "flight_info"
 dbDataFrame = spark.read.format("jdbc").option("url", url)\
   .option("dbtable", tablename).option("driver",  driver).load()
 
-
-# COMMAND ----------
-
+'''
 pgDF = spark.read.format("jdbc")\
   .option("driver", "org.postgresql.Driver")\
   .option("url", "jdbc:postgresql://database_server")\
   .option("dbtable", "schema.tablename")\
   .option("user", "username").option("password", "my-secret-password").load()
-
+'''
 
 # COMMAND ----------
 

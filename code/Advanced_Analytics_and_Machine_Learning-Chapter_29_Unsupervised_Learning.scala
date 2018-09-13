@@ -1,17 +1,17 @@
 // in Scala
 import org.apache.spark.ml.feature.VectorAssembler
 
-val va = new VectorAssembler()
+val va = (new VectorAssembler()
   .setInputCols(Array("Quantity", "UnitPrice"))
-  .setOutputCol("features")
+  .setOutputCol("features"))
 
-val sales = va.transform(spark.read.format("csv")
+val sales = (va.transform(spark.read.format("csv")
   .option("header", "true")
   .option("inferSchema", "true")
   .load("/data/retail-data/by-day/*.csv")
   .limit(50)
   .coalesce(1)
-  .where("Description IS NOT NULL"))
+  .where("Description IS NOT NULL")))
 
 sales.cache()
 
@@ -80,13 +80,13 @@ summary.probability.show()
 import org.apache.spark.ml.feature.{Tokenizer, CountVectorizer}
 val tkn = new Tokenizer().setInputCol("Description").setOutputCol("DescOut")
 val tokenized = tkn.transform(sales.drop("features"))
-val cv = new CountVectorizer()
+val cv = (new CountVectorizer()
   .setInputCol("DescOut")
   .setOutputCol("features")
   .setVocabSize(500)
   .setMinTF(0)
   .setMinDF(0)
-  .setBinary(true)
+  .setBinary(true))
 val cvFitted = cv.fit(tokenized)
 val prepped = cvFitted.transform(tokenized)
 
