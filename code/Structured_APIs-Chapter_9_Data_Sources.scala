@@ -5,12 +5,13 @@ dataFrame.write
 // COMMAND ----------
 
 // in Scala
+/*
 (dataframe.write.format("csv")
   .option("mode", "OVERWRITE")
   .option("dateFormat", "yyyy-MM-dd")
   .option("path", "path/to/file(s)")
   .save())
-
+*/
 
 // COMMAND ----------
 
@@ -20,12 +21,13 @@ spark.read.format("csv")
 // COMMAND ----------
 
 // in Scala
+/*
 (spark.read.format("csv")
   .option("header", "true")
   .option("mode", "FAILFAST")
   .option("inferSchema", "true")
   .load("some/path/to/file.csv"))
-
+*/
 
 // COMMAND ----------
 
@@ -48,8 +50,8 @@ val myManualSchema = new StructType(Array(
 
 // in Scala
 val myManualSchema = new StructType(Array(
-                     new StructField("DEST_COUNTRY_NAME", LongType, true),
-                     new StructField("ORIGIN_COUNTRY_NAME", LongType, true),
+                     new StructField("DEST_COUNTRY_NAME", StringType, true),
+                     new StructField("ORIGIN_COUNTRY_NAME", StringType, true),
                      new StructField("count", LongType, false) ))
 
 (spark.read.format("csv")
@@ -156,13 +158,14 @@ val dbDataFrame = (spark.read.format("jdbc").option("url", url)
 // COMMAND ----------
 
 // in Scala
+/*
 val pgDF = (spark.read
   .format("jdbc")
   .option("driver", "org.postgresql.Driver")
   .option("url", "jdbc:postgresql://database_server")
   .option("dbtable", "schema.tablename")
   .option("user", "username").option("password","my-secret-password").load())
-
+*/
 
 // COMMAND ----------
 

@@ -54,15 +54,13 @@ deviceModelStats = streaming.cube("gt", "model").avg()\
 
 
 # COMMAND ----------
-'''
 historicalAgg = static.groupBy("gt", "model").avg()
 deviceModelStats = streaming.drop("Arrival_Time", "Creation_Time", "Index")\
   .cube("gt", "model").avg()\
   .join(historicalAgg, ["gt", "model"])\
-  .writeStream.queryName("device_counts").format("memory")\
+  .writeStream.queryName("device_counts1").format("memory")\
   .outputMode("complete")\
   .start()
-'''
 
 # COMMAND ----------
 

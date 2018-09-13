@@ -31,7 +31,16 @@ val activityQuery = (activityCounts.writeStream.queryName("activity_counts")
 
 // COMMAND ----------
 
-activityQuery.awaitTermination()
+/*
+  이 코드 주석을 해제하면 activityQuery 스트리밍 잡이 끝날 때까지 기다립니다.
+  zeppelin note에는 activityQuery를 끝내는 코드가 없으므로 영원히 기다리게 됩니다.
+
+  If uncomment below code, you should wait for activityQuery Streaming Job's termination.
+  On this zeppelin note, there is no termination code for activityQuery.
+  So you will be waitting forever.
+ */
+
+//activityQuery.awaitTermination()
 
 
 // COMMAND ----------
@@ -72,15 +81,15 @@ val deviceModelStats = (streaming.cube("gt", "model").avg()
   .drop("avg(Index)")
   .writeStream.queryName("device_counts").format("memory").outputMode("complete")
   .start())
-/*
+
 // in Scala
 val historicalAgg = static.groupBy("gt", "model").avg()
 val deviceModelStats = (streaming.drop("Arrival_Time", "Creation_Time", "Index")
   .cube("gt", "model").avg()
   .join(historicalAgg, Seq("gt", "model"))
-  .writeStream.queryName("device_counts").format("memory").outputMode("complete")
+  .writeStream.queryName("device_counts1").format("memory").outputMode("complete")
   .start())
-*/
+
 
 // COMMAND ----------
 
@@ -128,6 +137,7 @@ val ds3 = (spark.readStream.format("kafka")
 // COMMAND ----------
 
 //in Scala
+/*
 datasetOfString.write.foreach(new ForeachWriter[String] {
   def open(partitionId: Long, version: Long): Boolean = {
     // open a database connection
@@ -139,13 +149,13 @@ datasetOfString.write.foreach(new ForeachWriter[String] {
     // close the connection
   }
 })
-
+*/
 
 // COMMAND ----------
 
 // in Scala
-val socketDF = spark.readStream.format("socket")
-  .option("host", "localhost").option("port", 9999).load()
+val socketDF = (spark.readStream.format("socket")
+  .option("host", "localhost").option("port", 9999).load())
 
 
 // COMMAND ----------
@@ -191,9 +201,10 @@ val flights = flightsDF.as[Flight]
 def originIsDestination(flight_row: Flight): Boolean = {
   return flight_row.ORIGIN_COUNTRY_NAME == flight_row.DEST_COUNTRY_NAME
 }
+
 (flights.filter(flight_row => originIsDestination(flight_row))
   .groupByKey(x => x.DEST_COUNTRY_NAME).count()
-  .writeStream.queryName("device_counts").format("memory").outputMode("complete")
+  .writeStream.queryName("device_counts2").format("memory").outputMode("complete")
   .start())
 
 
