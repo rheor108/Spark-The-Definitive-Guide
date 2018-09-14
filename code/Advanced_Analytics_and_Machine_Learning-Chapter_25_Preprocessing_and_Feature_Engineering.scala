@@ -235,7 +235,7 @@ import org.apache.spark.ml.feature.StopWordsRemover
 val englishStopWords = StopWordsRemover.loadDefaultStopWords("english")
 val stops = (new StopWordsRemover()
   .setStopWords(englishStopWords)
-  .setInputCol("DescOut")))
+  .setInputCol("DescOut"))
 stops.transform(tokenized).show()
 
 
