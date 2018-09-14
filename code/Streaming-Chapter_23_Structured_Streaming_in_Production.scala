@@ -1,3 +1,8 @@
+%dep
+z.load("org.apache.kafka:kafka-clients:0.10.2.2")
+
+// COMMAND ----------
+
 // in Scala
 val static = spark.read.json("/data/activity-data")
 val streaming = (spark

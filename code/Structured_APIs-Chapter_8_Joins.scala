@@ -148,7 +148,10 @@ person.join(gradProgramDupe, joinExpr).show()
 
 // COMMAND ----------
 
-person.join(gradProgramDupe, joinExpr).select("graduate_program").show()
+
+// This statement will fail because of column name duplication.
+
+//person.join(gradProgramDupe, joinExpr).select("graduate_program").show()
 
 
 // COMMAND ----------

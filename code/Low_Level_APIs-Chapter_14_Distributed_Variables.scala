@@ -88,18 +88,17 @@ accChina.value // 953
 
 // in Scala
 import scala.collection.mutable.ArrayBuffer
-import org.apache.spark.util.AccumulatorV2
-
 val arr = ArrayBuffer[BigInt]()
 
-class EvenAccumulator extends AccumulatorV2[BigInt, BigInt] {
+class EvenAccumulator extends org.apache.spark.util.AccumulatorV2[BigInt, BigInt] {
+  import org.apache.spark.util.AccumulatorV2
   private var num:BigInt = 0
   def reset(): Unit = {
     this.num = 0
   }
   def add(intValue: BigInt): Unit = {
     if (intValue % 2 == 0) {
-        this.num += intValue
+      this.num += intValue
     }
   }
   def merge(other: AccumulatorV2[BigInt,BigInt]): Unit = {

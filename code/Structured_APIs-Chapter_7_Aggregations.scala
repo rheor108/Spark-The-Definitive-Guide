@@ -143,7 +143,7 @@ dfWithDate.createOrReplaceTempView("dfWithDate")
 // in Scala
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.col
-(val windowSpec = Window
+val windowSpec = (Window
   .partitionBy("CustomerId", "date")
   .orderBy(col("Quantity").desc)
   .rowsBetween(Window.unboundedPreceding, Window.currentRow))
@@ -234,11 +234,12 @@ pivoted.where("date > '2011-12-05'").select("date" ,"`USA_sum(Quantity)`").show(
 // COMMAND ----------
 
 // in Scala
-import org.apache.spark.sql.expressions.MutableAggregationBuffer
-import org.apache.spark.sql.expressions.UserDefinedAggregateFunction
-import org.apache.spark.sql.Row
-import org.apache.spark.sql.types._
-class BoolAnd extends UserDefinedAggregateFunction {
+// in Scala
+class BoolAnd extends org.apache.spark.sql.expressions.UserDefinedAggregateFunction {
+  import org.apache.spark.sql.types.{StructType, StructField, BooleanType, DataType}
+  import org.apache.spark.sql.expressions.MutableAggregationBuffer
+  import org.apache.spark.sql.Row
+
   def inputSchema: org.apache.spark.sql.types.StructType =
     StructType(StructField("value", BooleanType) :: Nil)
   def bufferSchema: StructType = StructType(

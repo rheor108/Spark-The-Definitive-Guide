@@ -306,8 +306,8 @@ val newRows = Seq(
   Row("New Country 2", "Other Country 3", 1L)
 )
 val parallelizedRows = spark.sparkContext.parallelize(newRows)
-val newDF = (spark.createDataFrame(parallelizedRows, schema)
-df.union(newDF)
+val newDF = spark.createDataFrame(parallelizedRows, schema)
+(df.union(newDF)
   .where("count = 1")
   .where($"ORIGIN_COUNTRY_NAME" =!= "United States")
   .show()) // get all of them and we'll see our new rows at the end

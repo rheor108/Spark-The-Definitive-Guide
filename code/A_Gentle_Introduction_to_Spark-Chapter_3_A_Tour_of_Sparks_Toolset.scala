@@ -91,6 +91,7 @@ val purchaseByCustomerPerHour = (streamingDataFrame
     .outputMode("complete") // complete = all the counts should be in the table
     .start())
 
+Thread.sleep(5000)
 
 // COMMAND ----------
 

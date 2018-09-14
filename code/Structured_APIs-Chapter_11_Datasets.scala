@@ -117,8 +117,8 @@ flights.groupByKey(x => x.DEST_COUNTRY_NAME).mapValues(grpSum2).count().take(5)
 def sum2(left:Flight, right:Flight) = {
   Flight(left.DEST_COUNTRY_NAME, null, left.count + right.count)
 }
-flights.groupByKey(x => x.DEST_COUNTRY_NAME).reduceGroups((l, r) => sum2(l, r))
-  .take(5)
+(flights.groupByKey(x => x.DEST_COUNTRY_NAME).reduceGroups((l, r) => sum2(l, r))
+  .take(5))
 
 
 // COMMAND ----------

@@ -28,6 +28,8 @@ val activityQuery = (activityCounts.writeStream.queryName("activity_counts")
   .format("memory").outputMode("complete")
   .start())
 
+Thread.sleep(5000)
+
 
 // COMMAND ----------
 
@@ -71,6 +73,7 @@ val simpleTransform = (streaming.withColumn("stairs", expr("gt like '%stairs%'")
   .outputMode("append")
   .start())
 
+Thread.sleep(5000)
 
 // COMMAND ----------
 
@@ -82,6 +85,8 @@ val deviceModelStats = (streaming.cube("gt", "model").avg()
   .writeStream.queryName("device_counts").format("memory").outputMode("complete")
   .start())
 
+Thread.sleep(5000)
+
 // in Scala
 val historicalAgg = static.groupBy("gt", "model").avg()
 val deviceModelStats = (streaming.drop("Arrival_Time", "Creation_Time", "Index")
@@ -90,6 +95,7 @@ val deviceModelStats = (streaming.drop("Arrival_Time", "Creation_Time", "Index")
   .writeStream.queryName("device_counts1").format("memory").outputMode("complete")
   .start())
 
+Thread.sleep(5000)
 
 // COMMAND ----------
 
@@ -160,7 +166,7 @@ val socketDF = (spark.readStream.format("socket")
 
 // COMMAND ----------
 
-activityCounts.format("console").write()
+//activityCounts.format("console").write()
 
 
 // COMMAND ----------

@@ -1,5 +1,5 @@
 // in Scala
-dataFrame.write
+//dataFrame.write
 
 
 // COMMAND ----------

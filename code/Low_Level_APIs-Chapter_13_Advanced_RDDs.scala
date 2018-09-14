@@ -233,9 +233,12 @@ sc.parallelize(1 to 10).map(num => new SomeClass().setSomeValue(num))
 // COMMAND ----------
 
 // in Scala
+/*
+// in Scala
 val conf = new SparkConf().setMaster(...).setAppName(...)
 conf.registerKryoClasses(Array(classOf[MyClass1], classOf[MyClass2]))
 val sc = new SparkContext(conf)
+*/
 
 
 // COMMAND ----------
