@@ -14,7 +14,7 @@ val sc = SparkContext.getOrCreate()
 
 // COMMAND ----------
 
-step4.explain()
+//step4.explain()
 
 
 // COMMAND ----------

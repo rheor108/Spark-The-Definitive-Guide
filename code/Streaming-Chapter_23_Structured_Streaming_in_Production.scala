@@ -28,7 +28,7 @@ query.recentProgress
 
 // COMMAND ----------
 
-val spark: SparkSession = ...
+//val spark: SparkSession = ...
 
 spark.streams.addListener(new StreamingQueryListener() {
     override def onQueryStarted(queryStarted: QueryStartedEvent): Unit = {
@@ -41,13 +41,17 @@ spark.streams.addListener(new StreamingQueryListener() {
     override def onQueryProgress(queryProgress: QueryProgressEvent): Unit = {
         println("Query made progress: " + queryProgress.progress)
     }
-})
+}
 
 
 // COMMAND ----------
 
-class KafkaMetrics(servers: String) extends StreamingQueryListener {
-  val kafkaProperties = new Properties()
+import java.util.Properties
+import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.spark.sql.streaming.StreamingQueryListener
+
+class KafkaMetrics(servers: String) extends org.apache.spark.sql.streaming.StreamingQueryListener {
+  val kafkaProperties = new java.util.Properties()
   kafkaProperties.put(
     "bootstrap.servers",
     servers)
@@ -58,21 +62,23 @@ class KafkaMetrics(servers: String) extends StreamingQueryListener {
     "value.serializer",
     "kafkashaded.org.apache.kafka.common.serialization.StringSerializer")
 
-  val producer = new KafkaProducer[String, String](kafkaProperties)
+  val producer = new org.apache.kafka.clients.producer.KafkaProducer[String, String](kafkaProperties)
 
   import org.apache.spark.sql.streaming.StreamingQueryListener
   import org.apache.kafka.clients.producer.KafkaProducer
+  import org.apache.kafka.clients.producer.ProducerRecord
 
   override def onQueryProgress(event:
-    StreamingQueryListener.QueryProgressEvent): Unit = {
+                               StreamingQueryListener.QueryProgressEvent): Unit = {
     producer.send(new ProducerRecord("streaming-metrics",
       event.progress.json))
   }
   override def onQueryStarted(event:
-    StreamingQueryListener.QueryStartedEvent): Unit = {}
+                              StreamingQueryListener.QueryStartedEvent): Unit = {}
   override def onQueryTerminated(event:
-    StreamingQueryListener.QueryTerminatedEvent): Unit = {}
+                                 StreamingQueryListener.QueryTerminatedEvent): Unit = {}
 }
+
 
 
 

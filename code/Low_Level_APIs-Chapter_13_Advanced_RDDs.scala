@@ -46,8 +46,8 @@ keyword.lookup("s")
 val distinctChars = (words.flatMap(word => word.toLowerCase.toSeq).distinct
   .collect())
 import scala.util.Random
-val sampleMap = (distinctChars.map(c => (c, new Random().nextDouble())).toMap
-words.map(word => (word.toLowerCase.toSeq(0), word))
+val sampleMap = distinctChars.map(c => (c, new Random().nextDouble())).toMap
+(words.map(word => (word.toLowerCase.toSeq(0), word))
   .sampleByKey(true, sampleMap, 6L)
   .collect())
 

@@ -9,3 +9,4 @@ this note must be executed to download dependent libraries.
 z.load("databricks:spark-deep-learning:0.3.0-spark2.2-s_2.11")
 z.load("graphframes:graphframes:0.6.0-spark2.2-s_2.11")
 z.load("org.apache.spark:spark-sql-kafka-0-10_2.11:2.2.2")
+z.load("org.apache.kafka:kafka_2.11:0.10.2.2")
