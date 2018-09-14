@@ -6,7 +6,7 @@ val df = spark.read.load("/data/regression")
 
 // in Scala
 import org.apache.spark.ml.regression.LinearRegression
-val lr = (new LinearRegression().setMaxIter(10).setRegParam(0.3)\
+val lr = (new LinearRegression().setMaxIter(10).setRegParam(0.3)
   .setElasticNetParam(0.8))
 println(lr.explainParams())
 val lrModel = lr.fit(df)
