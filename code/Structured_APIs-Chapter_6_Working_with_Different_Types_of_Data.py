@@ -373,11 +373,17 @@ power3udf = udf(power3)
 from pyspark.sql.functions import col
 udfExampleDF.select(power3udf(col("num"))).show(2)
 
+# COMMAND ----------
+
+// in Scala
+def power3(number:Double):Double = number * number * number
+
+spark.udf.register("power3", power3(_:Double):Double)
 
 # COMMAND ----------
 
 udfExampleDF.selectExpr("power3(num)").show(2)
-# registered in Scala
+registered in Scala
 
 
 # COMMAND ----------
