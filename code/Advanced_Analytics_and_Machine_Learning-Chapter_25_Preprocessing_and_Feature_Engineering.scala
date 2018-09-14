@@ -120,9 +120,9 @@ fittedmaScaler.transform(scaleDF).show()
 import org.apache.spark.ml.feature.ElementwiseProduct
 import org.apache.spark.ml.linalg.Vectors
 val scaleUpVec = Vectors.dense(10.0, 15.0, 20.0)
-val scalingUp = new ElementwiseProduct()
+val scalingUp = (new ElementwiseProduct()
   .setScalingVec(scaleUpVec)
-  .setInputCol("features")
+  .setInputCol("features"))
 scalingUp.transform(scaleDF).show()
 
 
@@ -176,8 +176,8 @@ val idxIn = (spark.createDataFrame(Seq(
   (Vectors.dense(1, 2, 3),1),
   (Vectors.dense(2, 5, 6),2),
   (Vectors.dense(1, 8, 9),3)
-)).toDF("features", "label")
-val indxr = new VectorIndexer()
+)).toDF("features", "label"))
+val indxr = (new VectorIndexer()
   .setInputCol("features")
   .setOutputCol("idxed")
   .setMaxCategories(2))
@@ -232,10 +232,10 @@ rt.transform(sales.select("Description")).show(false)
 
 // in Scala
 import org.apache.spark.ml.feature.StopWordsRemover
-val englishStopWords = (StopWordsRemover.loadDefaultStopWords("english")
-val stops = new StopWordsRemover()
+val englishStopWords = StopWordsRemover.loadDefaultStopWords("english")
+val stops = (new StopWordsRemover()
   .setStopWords(englishStopWords)
-  .setInputCol("DescOut"))
+  .setInputCol("DescOut")))
 stops.transform(tokenized).show()
 
 
