@@ -1,3 +1,8 @@
+%dep
+z.load("graphframes:graphframes:0.6.0-spark2.2-s_2.11")
+
+// COMMAND ----------
+
 // in Scala
 val bikeStations = (spark.read.option("header","true")
   .csv("/data/bike-data/201508_station_data.csv"))

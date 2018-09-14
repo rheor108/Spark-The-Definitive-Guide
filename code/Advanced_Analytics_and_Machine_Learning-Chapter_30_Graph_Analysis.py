@@ -1,6 +1,8 @@
-# 실행에 앞서, "spark-packages.dep" 노트를 실행시켜서 라이브러리를 다운로드해야 합니다.
-# Prior to execute this note, "Spark-The-Definitive-Guide-Dependency/spark-packages.dep" note
-# must be executed to download dependent libraries.
+%dep
+z.load("graphframes:graphframes:0.6.0-spark2.2-s_2.11")
+
+# COMMAND ----------
+
 bikeStations = spark.read.option("header","true")\
   .csv("/data/bike-data/201508_station_data.csv")
 tripData = spark.read.option("header","true")\
