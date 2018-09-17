@@ -383,7 +383,7 @@ spark.udf.register("power3", power3(_:Double):Double)
 # COMMAND ----------
 
 udfExampleDF.selectExpr("power3(num)").show(2)
-registered in Scala
+# registered in Scala
 
 
 # COMMAND ----------
