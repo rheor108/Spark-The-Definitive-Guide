@@ -370,43 +370,45 @@ loadedPCA.transform(scaleDF).show()
 
 // COMMAND ----------
 
-import org.apache.spark.ml.UnaryTransformer
-import org.apache.spark.ml.util.{DefaultParamsReadable, DefaultParamsWritable,
-  Identifiable}
-import org.apache.spark.sql.types.{ArrayType, StringType, DataType}
-import org.apache.spark.ml.param.{IntParam, ParamValidators}
+{
+  import org.apache.spark.ml.UnaryTransformer
+  import org.apache.spark.ml.util.{
+    DefaultParamsReadable, DefaultParamsWritable,
+    Identifiable
+  }
+  import org.apache.spark.sql.types.{ArrayType, StringType, DataType}
+  import org.apache.spark.ml.param.{IntParam, ParamValidators}
 
-class MyTokenizer(override val uid: String)
-  extends UnaryTransformer[String, Seq[String],
-    MyTokenizer] with DefaultParamsWritable {
+  class MyTokenizer(val uid: String) extends UnaryTransformer[String, Seq[String], MyTokenizer] with DefaultParamsWritable {
 
-  def this() = this(Identifiable.randomUID("myTokenizer"))
+    def this() = this(Identifiable.randomUID("myTokenizer"))
 
-  val maxWords: IntParam = new IntParam(this, "maxWords",
-    "The max number of words to return.",
-  ParamValidators.gtEq(0))
+    val maxWords: IntParam = new IntParam(this, "maxWords",
+      "The max number of words to return.",
+      ParamValidators.gtEq(0))
 
-  def setMaxWords(value: Int): this.type = set(maxWords, value)
+    def setMaxWords(value: Int): this.type = set(maxWords, value)
 
-  def getMaxWords: Integer = $(maxWords)
+    def getMaxWords: Integer = $(maxWords)
 
-  override protected def createTransformFunc: String => Seq[String] = (
-    inputString: String) => {
+    override protected def createTransformFunc: String => Seq[String] = (
+                                                                          inputString: String) => {
       inputString.split("\\s").take($(maxWords))
+    }
+
+    override protected def validateInputType(inputType: DataType): Unit = {
+      require(
+        inputType == StringType, s"Bad input type: $inputType. Requires String.")
+    }
+
+    override protected def outputDataType: DataType = new ArrayType(StringType,
+      true)
   }
 
-  override protected def validateInputType(inputType: DataType): Unit = {
-    require(
-      inputType == StringType, s"Bad input type: $inputType. Requires String.")
-  }
+  // this will allow you to read it back in by using this object.
+  object MyTokenizer extends DefaultParamsReadable[MyTokenizer]
 
-  override protected def outputDataType: DataType = new ArrayType(StringType,
-    true)
 }
-
-// this will allow you to read it back in by using this object.
-object MyTokenizer extends DefaultParamsReadable[MyTokenizer]
-
 
 // COMMAND ----------
 
