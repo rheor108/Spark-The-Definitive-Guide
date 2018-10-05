@@ -370,45 +370,38 @@ loadedPCA.transform(scaleDF).show()
 
 // COMMAND ----------
 
-{
-  import org.apache.spark.ml.UnaryTransformer
-  import org.apache.spark.ml.util.{
-    DefaultParamsReadable, DefaultParamsWritable,
-    Identifiable
-  }
+class MyTokenizer(override val uid: String) extends org.apache.spark.ml.UnaryTransformer[String, Seq[String], MyTokenizer] with org.apache.spark.ml.util.DefaultParamsWritable {
+  import org.apache.spark.ml.util.{DefaultParamsReadable, DefaultParamsWritable,Identifiable}
   import org.apache.spark.sql.types.{ArrayType, StringType, DataType}
   import org.apache.spark.ml.param.{IntParam, ParamValidators}
 
-  class MyTokenizer(val uid: String) extends UnaryTransformer[String, Seq[String], MyTokenizer] with DefaultParamsWritable {
+  def this() = this(org.apache.spark.ml.util.Identifiable.randomUID("myTokenizer"))
 
-    def this() = this(Identifiable.randomUID("myTokenizer"))
+  val maxWords: IntParam = new IntParam(this, "maxWords",
+    "The max number of words to return.",
+    ParamValidators.gtEq(0))
 
-    val maxWords: IntParam = new IntParam(this, "maxWords",
-      "The max number of words to return.",
-      ParamValidators.gtEq(0))
+  def setMaxWords(value: Int): this.type = set(maxWords, value)
 
-    def setMaxWords(value: Int): this.type = set(maxWords, value)
+  def getMaxWords: Integer = $(maxWords)
 
-    def getMaxWords: Integer = $(maxWords)
-
-    override protected def createTransformFunc: String => Seq[String] = (
-                                                                          inputString: String) => {
-      inputString.split("\\s").take($(maxWords))
-    }
-
-    override protected def validateInputType(inputType: DataType): Unit = {
-      require(
-        inputType == StringType, s"Bad input type: $inputType. Requires String.")
-    }
-
-    override protected def outputDataType: DataType = new ArrayType(StringType,
-      true)
+  override protected def createTransformFunc: String => Seq[String] = (
+                                                                        inputString: String) => {
+    inputString.split("\\s").take($(maxWords))
   }
 
-  // this will allow you to read it back in by using this object.
-  object MyTokenizer extends DefaultParamsReadable[MyTokenizer]
+  override protected def validateInputType(inputType: DataType): Unit = {
+    require(
+      inputType == StringType, s"Bad input type: $inputType. Requires String.")
+  }
 
+  override protected def outputDataType: DataType = new ArrayType(StringType,
+    true)
 }
+
+import org.apache.spark.ml.util.DefaultParamsReadable
+// this will allow you to read it back in by using this object.
+object MyTokenizer extends DefaultParamsReadable[MyTokenizer]
 
 // COMMAND ----------
 
